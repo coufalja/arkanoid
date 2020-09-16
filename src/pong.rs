@@ -7,7 +7,7 @@ use amethyst::{
     renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
     ui::{TtfFormat, UiTransform, Anchor, UiText, LineMode},
 };
-use rand::Rng;
+use rand::prelude::*;
 
 pub const ARENA_HEIGHT: f32 = 100.0;
 pub const ARENA_WIDTH: f32 = 100.0;
@@ -234,7 +234,7 @@ fn initialise_ball(world: &mut World, sprite_sheet_handle: Handle<SpriteSheet>) 
         .with(sprite_render)
         .with(Ball {
             radius: BALL_RADIUS,
-            velocity: [BALL_VELOCITY_X, BALL_VELOCITY_Y * rng.gen_range(-1.0, 1.0)],
+            velocity: [BALL_VELOCITY_X * rng.gen_range(-1.0, 1.0), BALL_VELOCITY_Y],
         })
         .with(local_transform)
         .build();
