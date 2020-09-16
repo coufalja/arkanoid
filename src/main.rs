@@ -1,9 +1,7 @@
-//! Pong Tutorial 2
-
-mod pong;
+mod arkanoid;
 mod systems;
 
-use crate::pong::Pong;
+use crate::arkanoid::Arkanoid;
 use amethyst::{
     core::TransformBundle,
     prelude::*,
@@ -51,7 +49,7 @@ fn main() -> amethyst::Result<()> {
         .with(systems::BounceSystem, "bounce_system", &["paddle_system", "ball_system"])
         .with(systems::WinnerSystem, "winner_system", &["ball_system"]);
 
-    let mut game = Application::new(assets_dir, Pong::default(), game_data)?;
+    let mut game = Application::new(assets_dir, Arkanoid::default(), game_data)?;
     game.run();
     Ok(())
 }

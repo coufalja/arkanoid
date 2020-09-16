@@ -423,6 +423,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "arkanoid"
+version = "0.1.0"
+dependencies = [
+ "amethyst",
+ "rand 0.7.3",
+]
+
+[[package]]
 name = "arrayref"
 version = "0.3.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2410,14 +2418,6 @@ dependencies = [
  "crc32fast",
  "deflate 0.8.6",
  "miniz_oxide 0.3.7",
-]
-
-[[package]]
-name = "pong"
-version = "0.1.0"
-dependencies = [
- "amethyst",
- "rand 0.7.3",
 ]
 
 [[package]]

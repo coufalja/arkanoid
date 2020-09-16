@@ -3,7 +3,7 @@ use amethyst::{
     ecs::{Join, ReadStorage, System, WriteStorage},
 };
 
-use crate::pong::{Ball, Side, Paddle, ARENA_HEIGHT};
+use crate::arkanoid::{Ball, Paddle, ARENA_HEIGHT, ARENA_WIDTH};
 
 pub struct BounceSystem;
 
@@ -23,9 +23,11 @@ impl<'s> System<'s> for BounceSystem {
             let ball_x = transform.translation().x;
             let ball_y = transform.translation().y;
 
-            // Bounce at the top or the bottom of the arena.
-            if (ball_y <= ball.radius && ball.velocity[1] < 0.0)
-                || (ball_y >= ARENA_HEIGHT - ball.radius && ball.velocity[1] > 0.0)
+            // Bounce at the top or the sides of the arena.
+            if (ball_x <= ball.radius && ball.velocity[0] < 0.0) || (ball_x >= ARENA_WIDTH - ball.radius && ball.velocity[0] > 0.0) {
+                ball.velocity[0] = -ball.velocity[0];
+            }
+            if ball_y >= ARENA_HEIGHT - ball.radius && ball.velocity[1] > 0.0
             {
                 ball.velocity[1] = -ball.velocity[1];
             }
@@ -33,7 +35,6 @@ impl<'s> System<'s> for BounceSystem {
             // Bounce at the paddles.
             for (paddle, paddle_transform) in (&paddles, &transforms).join() {
                 let paddle_x = paddle_transform.translation().x - (paddle.width * 0.5);
-                let paddle_y = paddle_transform.translation().y - (paddle.height * 0.5);
 
                 // To determine whether the ball has collided with a paddle, we create a larger
                 // rectangle around the current one, by subtracting the ball radius from the
@@ -43,16 +44,12 @@ impl<'s> System<'s> for BounceSystem {
                 if point_in_rect(
                     ball_x,
                     ball_y,
-                    paddle_x - ball.radius,
-                    paddle_y - ball.radius,
-                    paddle_x + paddle.width + ball.radius,
-                    paddle_y + paddle.height + ball.radius,
+                    paddle_x,
+                    paddle.height,
+                    paddle_x + paddle.width,
+                    paddle.height + ball.radius,
                 ) {
-                    if (paddle.side == Side::Left && ball.velocity[0] < 0.0)
-                        || (paddle.side == Side::Right && ball.velocity[0] > 0.0)
-                    {
-                        ball.velocity[0] = -ball.velocity[0];
-                    }
+                    ball.velocity[1] = -ball.velocity[1];
                 }
             }
         }

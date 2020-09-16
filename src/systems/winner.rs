@@ -1,4 +1,4 @@
-use crate::pong::{Ball, ARENA_WIDTH, ARENA_HEIGHT, ScoreBoard, ScoreText};
+use crate::arkanoid::{Ball, ARENA_WIDTH, ARENA_HEIGHT, ScoreBoard, ScoreText};
 use amethyst::{
     ui::UiText,
     core::transform::Transform,
@@ -27,21 +27,9 @@ impl<'s> System<'s> for WinnerSystem {
         score_text
     ): Self::SystemData) {
         for (ball, transform) in (&mut balls, &mut locals).join() {
-            let ball_x = transform.translation().x;
+            let ball_y = transform.translation().y;
 
-            let did_hit = if ball_x <= ball.radius {
-                // Right player scored on the left side.
-                // We top the score at 999 to avoid text overlap.
-                scores.score_right = (scores.score_right + 1)
-                    .min(999);
-
-                if let Some(text) = ui_text.get_mut(score_text.p2_score) {
-                    text.text = scores.score_right.to_string();
-                }
-                true
-            } else if ball_x >= ARENA_WIDTH - ball.radius {
-                // Left player scored on the right side.
-                // We top the score at 999 to avoid text overlap.
+            let did_hit = if ball_y <= ball.radius {
                 scores.score_left = (scores.score_left + 1)
                     .min(999);
                 if let Some(text) = ui_text.get_mut(score_text.p1_score) {

@@ -12,20 +12,20 @@ use rand::prelude::*;
 pub const ARENA_HEIGHT: f32 = 100.0;
 pub const ARENA_WIDTH: f32 = 100.0;
 
-pub const PADDLE_HEIGHT: f32 = 16.0;
-pub const PADDLE_WIDTH: f32 = 4.0;
+pub const PADDLE_HEIGHT: f32 = 4.0;
+pub const PADDLE_WIDTH: f32 = 16.0;
 
 pub const BALL_VELOCITY_X: f32 = 50.0;
 pub const BALL_VELOCITY_Y: f32 = 33.0;
 pub const BALL_RADIUS: f32 = 2.0;
 
 #[derive(Default)]
-pub struct Pong {
+pub struct Arkanoid {
     ball_spawn_timer: Option<f32>,
     sprite_sheet_handle: Option<Handle<SpriteSheet>>,
 }
 
-impl SimpleState for Pong {
+impl SimpleState for Arkanoid {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
         // Wait one second before spawning the ball.
@@ -37,7 +37,7 @@ impl SimpleState for Pong {
         self.sprite_sheet_handle.replace(load_sprite_sheet(world));
 
 
-        initialise_paddles(world, self.sprite_sheet_handle.clone().unwrap());
+        initialise_paddle(world, self.sprite_sheet_handle.clone().unwrap());
         initialise_camera(world);
         initialise_scoreboard(world);
     }
@@ -61,22 +61,14 @@ impl SimpleState for Pong {
     }
 }
 
-#[derive(PartialEq, Eq)]
-pub enum Side {
-    Left,
-    Right,
-}
-
 pub struct Paddle {
-    pub side: Side,
     pub width: f32,
     pub height: f32,
 }
 
 impl Paddle {
-    fn new(side: Side) -> Paddle {
+    fn new() -> Paddle {
         Paddle {
-            side,
             width: PADDLE_WIDTH,
             height: PADDLE_HEIGHT,
         }
@@ -190,14 +182,13 @@ fn initialise_scoreboard(world: &mut World) {
 }
 
 /// Initialises one paddle on the left, and one paddle on the right.
-fn initialise_paddles(world: &mut World, sprite_sheet_handle: Handle<SpriteSheet>) {
-    let mut left_transform = Transform::default();
-    let mut right_transform = Transform::default();
+fn initialise_paddle(world: &mut World, sprite_sheet_handle: Handle<SpriteSheet>) {
+    let mut local_transform = Transform::default();
 
     // Correctly position the paddles.
-    let y = ARENA_HEIGHT / 2.0;
-    left_transform.set_translation_xyz(PADDLE_WIDTH * 0.5, y, 0.0);
-    right_transform.set_translation_xyz(ARENA_WIDTH - PADDLE_WIDTH * 0.5, y, 0.0);
+    let x = ARENA_WIDTH / 2.0;
+    local_transform.set_translation_xyz(x, 0.0 + PADDLE_HEIGHT / 2.0, 0.0);
+    local_transform.set_rotation_2d(90.0f32.to_radians());
 
     // Assign the sprites for the paddles
     let sprite_render = SpriteRender::new(sprite_sheet_handle, 0); // paddle is the first sprite in the sprite_sheet
@@ -206,16 +197,8 @@ fn initialise_paddles(world: &mut World, sprite_sheet_handle: Handle<SpriteSheet
     world
         .create_entity()
         .with(sprite_render.clone())
-        .with(Paddle::new(Side::Left))
-        .with(left_transform)
-        .build();
-
-    // Create right plank entity.
-    world
-        .create_entity()
-        .with(sprite_render)
-        .with(Paddle::new(Side::Right))
-        .with(right_transform)
+        .with(Paddle::new())
+        .with(local_transform)
         .build();
 }
 
